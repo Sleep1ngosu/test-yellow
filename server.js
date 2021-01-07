@@ -7,8 +7,13 @@ app.use(express.json({ extended: false }))
 
 connectDB()
 
-app.use('/api', require('./routes/api/signin'))
-app.use('/api', require('./routes/api/signup'))
+app.use('/api', require('./routes/users/signin'))
+app.use('/api', require('./routes/users/signup'))
+app.use('/api/records', require('./routes/records/createRecord'))
+app.use('/api/records', require('./routes/records/deleteRecord'))
+app.use('/api/records', require('./routes/records/updateRecord'))
+app.use('/api/records', require('./routes/records/getAllRecords'))
+app.use('/api/records', require('./routes/records/getRecord'))
 
 app.listen(PORT, () => {
 	console.log(`server is up on ${PORT}`)
