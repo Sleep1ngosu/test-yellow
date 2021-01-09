@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const User = require('../../models/User')
 const auth = require('../../middleware/auth')
+const deleteImage = require('../../helpers/deleteImage')
 
 /**
  * route:   /api/records/delete/:id
@@ -17,8 +18,32 @@ router.delete('/delete/:id', auth, async (req, res) => {
 	try {
 		let user = await User.findOne({ username })
 		let records = user.records
+		let isRecord = false
+
+		records.forEach((e) => {
+			if (e.id === id) {
+				isRecord = true
+			}
+		})
+
+		if (!isRecord)
+			return res
+				.status(404)
+				.json({ message: 'record with this id is not found' })
 
 		let newRecords = records.filter((e) => e.id !== id)
+
+		// record's image by id (choosed from all user's records)
+		let image = null
+		records.forEach((e) => {
+			if (e.id === id) {
+				image = e.image
+			}
+		})
+		if (image) {
+			image = image.split('/')[image.split('/').length - 1]
+			deleteImage(image)
+		}
 
 		if (newRecords.length === records.length)
 			return res

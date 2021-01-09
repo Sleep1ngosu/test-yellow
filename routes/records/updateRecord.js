@@ -2,6 +2,9 @@ const express = require('express')
 const router = express.Router()
 const User = require('../../models/User')
 const auth = require('../../middleware/auth')
+const deleteImage = require('../../helpers/deleteImage')
+const createMulterUpload = require('../../helpers/createMulterUpload')
+const upload = createMulterUpload()
 
 /**
  * route:   /api/records/update
@@ -11,7 +14,7 @@ const auth = require('../../middleware/auth')
  * body:    { id, distance?, hours?, minutes?, seconds?, date? }
  */
 
-router.put('/update', auth, async (req, res) => {
+router.put('/update', [upload.single('image'), auth], async (req, res) => {
 	const { id, username } = req.body
 	const time = {
 		hours: +req.body.hours,
@@ -39,10 +42,24 @@ router.put('/update', auth, async (req, res) => {
 				.json({ message: 'record with this id is not found' })
 
 		let index = userRecords.indexOf(record)
+
+		// create filepath which at start equal to OLD RECORD'S IMAGE
+		let filepath = userRecords[index].image.split('/')[
+			userRecords[index].image.split('/').length - 1
+		]
+
+		if (req.file) {
+			// delete old picture binded with this record
+			deleteImage(filepath)
+			// make variable binded with new image
+			filepath = req.file.filename
+		}
+
 		userRecords[index] = {
 			...userRecords[index],
 			...updatedRecord,
 			time: { ...userRecords[index].time, ...time },
+			image: filepath,
 		}
 		delete userRecords[index].hours
 		delete userRecords[index].seconds

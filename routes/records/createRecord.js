@@ -4,24 +4,28 @@ const auth = require('../../middleware/auth')
 const { check, validationResult } = require('express-validator')
 const User = require('../../models/User')
 const crypto = require('crypto')
+const createMulterUpload = require('../../helpers/createMulterUpload')
+const upload = createMulterUpload()
 
 /**
  * route:   /api/records/create
  * desc:    create record
  * access:  public
  * header:  [auth]: token
- * body:    { distance, hours, minutes, seconds, date }
+ * body:    { distance, hours, minutes, seconds, date, image }
  */
 
 router.post(
 	'/create',
 	[
 		check('distance')
+			.not()
 			.isNumeric()
 			.withMessage('should be a number (meters)'),
-		check('hours').isNumeric().withMessage('should be a number'),
-		check('minutes').isNumeric().withMessage('should be a number'),
-		check('seconds').isNumeric().withMessage('should be a number'),
+		check('hours').not().isNumeric().withMessage('should be a number'),
+		check('minutes').not().isNumeric().withMessage('should be a number'),
+		check('seconds').not().isNumeric().withMessage('should be a number'),
+		upload.single('image'),
 		auth,
 	],
 	async (req, res) => {
@@ -42,6 +46,12 @@ router.post(
 			}
 			const id = crypto.randomBytes(32).toString('hex')
 
+			// create filepath for database
+			let filePath
+			req.file
+				? (filePath = `localhost:5000/${req.file.filename}`)
+				: (filePath = null)
+
 			const record = {
 				id,
 				distance: +distance,
@@ -51,6 +61,7 @@ router.post(
 					seconds: +seconds,
 				},
 				date,
+				image: filePath,
 			}
 			let arrRecords = [...user.records, record]
 			user = await User.findOneAndUpdate(
@@ -58,7 +69,6 @@ router.post(
 				{ records: arrRecords },
 				{ new: true }
 			)
-
 			res.status(200).json({ record, user })
 		} catch (err) {
 			res.status(500).json({ message: 'server error' })
