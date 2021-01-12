@@ -11,6 +11,32 @@ const auth = require('../../middleware/auth')
  * body:    {}
  */
 
+/**
+ * @swagger
+ * /api/records/get_record/{id}:
+ *   get:
+ *     tags: ['Records']
+ *     description: get record by its id
+ *     parameters:
+ *       - name: auth
+ *         in: header
+ *         description: user's token
+ *         required: true
+ *         type: string
+ *       - name: id
+ *         description: record's id
+ *         in: path
+ *         required: true
+ *         type: string
+ *     responses:
+ *        200:
+ *          description: record has been created successfully
+ *        400:
+ *          description: bad request
+ *        500:
+ *          description: wrong token
+ */
+
 router.get('/get_record/:id', auth, async (req, res) => {
 	const { username } = req.body
 	try {

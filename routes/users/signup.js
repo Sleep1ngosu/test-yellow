@@ -6,6 +6,28 @@ const { check, validationResult } = require('express-validator')
 
 //body { username, password, email }
 
+/**
+ * @swagger
+ * /api/sign_up:
+ *   post:
+ *     tags: ['Users']
+ *     description: Create new user
+ *     parameters:
+ *     - name: body
+ *       description: user's info
+ *       in: body
+ *       required: true
+ *       type: object
+ *       example: { "username": "username", "password": "password", "email": "email.mail.ru" }
+ *     responses:
+ *       200:
+ *         description: user has been created successfully
+ *       400:
+ *         description: bad request
+ *       500:
+ *         description: server error
+ */
+
 router.post(
 	'/sign_up',
 	[

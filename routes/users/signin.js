@@ -7,6 +7,29 @@ const config = require('config')
 const { check, validationResult } = require('express-validator')
 
 //body { username, password }
+
+/**
+ * @swagger
+ * /api/sign_in:
+ *   post:
+ *     tags: ['Users']
+ *     description: sign in
+ *     parameters:
+ *     - name: body
+ *       description: user's info
+ *       in: body
+ *       required: true
+ *       type: object
+ *       example: { "username": "username", "password": "password" }
+ *     responses:
+ *       200:
+ *         description: user has been created successfully
+ *       400:
+ *         description: bad request
+ *       500:
+ *         description: server error
+ */
+
 router.post(
 	'/sign_in',
 	[
@@ -40,7 +63,7 @@ router.post(
 						.status(401)
 						.json({ message: 'cant generate token' })
 
-				res.status(200).json({ user, token })
+				res.status(200).json({ token })
 			})
 		} catch (err) {
 			res.status(500).json({ message: 'server error' })
