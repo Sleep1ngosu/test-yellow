@@ -19,7 +19,7 @@ describe('record tests', () => {
 
 	it('get record test', (done) => {
 		const id =
-			'7cca6b750706aec5ec2cb1dc5bf9a2a14eb1ff283d7cecf2265740c0c05bf637'
+			'e0fcf354df52f23a1cb11d4b248879b8903ff049b5b49556fe1e1502a8edbd8b'
 		chai.request(app)
 			.get(`/api/records/get_record/${id}`)
 			.set(
